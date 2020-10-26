@@ -116,6 +116,39 @@ contract MultiSig{
         emit Deposit(msg.sender, msg.value, address(this).balance);
     }
 
+    function getOwners() public view returns (address[] memory) {
+        return owners;
+    }
+
+    function getTransactionCount() public view returns (uint) {
+        return transactions.length;
+    }
+
+    function getTransaction(uint _index)
+        public
+        view
+        returns (address to, uint value, bytes memory data, bool executed, uint numberOfConfims)
+    {
+        Transaction storage transaction = transactions[_index];
+
+        return (
+            transaction.to,
+            transaction.value,
+            transaction.data,
+            transaction.isExecuted,
+            transaction.numberOfConfims
+        );
+    }
+
+    function isConfirmed(uint _index, address _owner)
+        public
+        view
+        returns (bool)
+    {
+        Transaction storage transaction = transactions[_index];
+
+        return transaction.isConfirmed[_owner];
+    }
 }   
 
 

@@ -9,6 +9,7 @@ contract("MultiSig", accounts => {
     const conforms = 2
     //three owners and need 2 conformations
     //for each test, contract instance 
+
     let wallet 
     beforeEach(async () => {
         wallet = await MultiSig.new(owners, conforms)
@@ -27,8 +28,16 @@ contract("MultiSig", accounts => {
         await wallet.confirm(0, { from: owners[1] } )
 
         const response = await wallet.execute(0, {from: accounts[0]})
+        
+        // check  isexecuted is set to true
+        // emitted Execute
+        const { logs } = response
+        assert.equal(logs[0].event, "Execute")
+        assert.equal(logs[0].args.owners, owners[0])
+        assert.equal(logs[0].args.index, 0)
 
-        //
+        const tx = await wallet.getTransaction(0)
+        assert.equal(tx.executed, true)
         
     })
 
