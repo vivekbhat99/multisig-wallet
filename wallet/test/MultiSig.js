@@ -33,7 +33,7 @@ contract("MultiSig", accounts => {
         // emitted Execute
         const { logs } = response
         assert.equal(logs[0].event, "Execute")
-        assert.equal(logs[0].args.owners, owners[0])
+        assert.equal(logs[0].args.owner, owners[0])
         assert.equal(logs[0].args.index, 0)
 
         const tx = await wallet.getTransaction(0)
