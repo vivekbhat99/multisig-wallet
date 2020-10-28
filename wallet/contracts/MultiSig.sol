@@ -109,6 +109,7 @@ contract MultiSig{
         Transaction storage transaction = transactions[_index];
         require(transaction.isConfirmed[msg.sender] == true, "this transaction already not confirmed");
         transaction.isConfirmed[msg.sender] = false;
+        transaction.numberOfConfims -= 1;
         emit RevokeConformation(msg.sender, _index);
     }
     
