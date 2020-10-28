@@ -155,7 +155,7 @@ contract("MultiSig", accounts => {
     })
   })
 
-   describe("getOwners", () => {
+    describe("getOwners", () => {
     it("should return owners", async () => {
       const result = await wallet.getOwners()
 
@@ -165,10 +165,98 @@ contract("MultiSig", accounts => {
     })
   })
 
-  describe("getTransactionCount", () => {
+    describe("getTransactionCount", () => {
     it("should return index/number of traansaction count", async () => {
       assert.equal(await wallet.getTransactionCount(), 0)
     })
   })
+
+    describe("confirm Transaction", () => {
+    beforeEach(async () => {
+      const to = accounts[3]
+      const value = 0
+      const data = "0x0011"
+
+      await wallet.transact(to, value, data)
+    })
+
+    it("should confirm", async () => {
+      const { logs } = await wallet.confirm(0, {
+        from: owners[0],
+      })
+
+      assert.equal(logs[0].event, "Confirm")
+      assert.equal(logs[0].args.owner, owners[0])
+      assert.equal(logs[0].args.index, 0)
+
+      const index = await wallet.getTransaction(0)
+      assert.equal(index.numberOfConfims, 1)
+    })
+
+    it("should reject if not an owner", async () => {
+      await expect(
+        wallet.confirm(0, {
+          from: accounts[3],
+        })
+      ).to.be.rejected
+    })
+
+    it("should reject if index does not exist", async () => {
+      await expect(
+        wallet.confirm(1, {
+          from: owners[0],
+        })
+      ).to.be.rejected
+    })
+
+    it("should reject if already confirmed", async () => {
+      await wallet.confirm(0, {
+        from: owners[0],
+      })
+
+      await expect(
+        wallet.confirm(0, {
+          from: owners[0],
+        })
+      ).to.be.rejected
+    })
+  })
+
+    describe("Transact", () => {
+    const to = accounts[3]
+    const value = 0
+    const data = "0x0011"
+
+    it("should transact", async () => {
+      const { logs } = await wallet.transact(to, value, data, {
+        from: owners[0],
+      })
+
+      assert.equal(logs[0].event, "Transact")
+      assert.equal(logs[0].args.owner, owners[0])
+      assert.equal(logs[0].args.index, 0)
+      assert.equal(logs[0].args.to, to)
+      assert.equal(logs[0].args.value, value)
+      assert.equal(logs[0].args.data, data)
+
+      assert.equal(await wallet.getTransactionCount(), 1)
+
+      const tx = await wallet.getTransaction(0)
+      assert.equal(tx.to, to)
+      assert.equal(tx.value, value)
+      assert.equal(tx.data, data)
+      assert.equal(tx.numberOfConfims, 0)
+      assert.equal(tx.executed, false)
+    })
+
+    it("should reject if not owner", async () => {
+      await expect(
+        wallet.transact(to, value, data, {
+          from: accounts[3],
+        })
+      ).to.be.rejected
+    })
+  })
+
 }) // end - contract block
 
