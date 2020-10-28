@@ -87,9 +87,32 @@ contract("MultiSig", accounts => {
             //try catch works fine
             //now using chai
             //await expect( await wallet.execute(0, {from: accounts[0]})).to.be.rejected
+
+            await expect(
+              wallet.execute(0, {
+                from: owners[0],
+              })
+            ).to.be.rejected
+          })
+      
+        it("should reject if not owner", async () => {
+            await expect(
+              wallet.execute(0, {
+                from: accounts[3],
+              })
+            ).to.be.rejected
         })
 
+        it("should reject if index does not exist", async () => {
+          await expect(
+            wallet.execute(1, {
+              from: owners[0],
+            })
+          ).to.be.rejected
 
-    }) //end of describe block
+    }) //end of describe "execute" block
+
+  })
+
 }) // end - contract block
 
