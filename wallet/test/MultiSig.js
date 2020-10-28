@@ -113,7 +113,7 @@ contract("MultiSig", accounts => {
     }) //end of describe "execute" block
   })
 
-  describe("Revoke Confirmation", async () => {
+    describe("Revoke Confirmation", async () => {
     beforeEach(async () => {
       const to = accounts[3]
       const value = 0
@@ -155,5 +155,20 @@ contract("MultiSig", accounts => {
     })
   })
 
+   describe("getOwners", () => {
+    it("should return owners", async () => {
+      const result = await wallet.getOwners()
+
+      for (let i = 0; i < result.length; i++) {
+        assert.equal(result[i], owners[i])
+      }
+    })
+  })
+
+  describe("getTransactionCount", () => {
+    it("should return index/number of traansaction count", async () => {
+      assert.equal(await wallet.getTransactionCount(), 0)
+    })
+  })
 }) // end - contract block
 
