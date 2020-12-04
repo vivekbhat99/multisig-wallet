@@ -34,4 +34,19 @@ export async function unlockAccount(){
             };
         }
     
-    
+    export function subcribetoNetId(
+        web3:Web3,
+        callback: (error: Error | null, netId: number | null) => any) {
+            const id = setInterval(async () => {
+                try {
+                    const netId = await Web3.eth.get.netId();
+                    callback(null, netId);
+                } catch (error) {
+                    callback(error, null);
+                }
+            }, 1000);
+            return () => {
+                clearInterval(id);
+            };
+        }
+        
