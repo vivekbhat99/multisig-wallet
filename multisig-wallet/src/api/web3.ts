@@ -14,4 +14,24 @@ export async function unlockAccount(){
     const accounts = await web3.eth.getAccounts();
     
     return { web3, account: accounts[0] || "" };
+
 }
+
+//monitor changes | notify if  account changes
+    export function subcribetoAccount(
+        web3: Web3, 
+        callback: (error: Error | null, account: string | null) => any ){
+            const id = setInterval(async() => {
+                try{
+                    const accounts = await web3.eth.getAccounts();
+                    callback(null, accounts[0]);
+                } catch(error){
+                    callback(error, null);
+                }
+            }, 1000);
+            return () => {
+                clearInterval(id);
+            };
+        }
+    
+    
