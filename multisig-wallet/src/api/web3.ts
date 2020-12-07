@@ -39,7 +39,7 @@ export async function unlockAccount(){
         callback: (error: Error | null, netId: number | null) => any) {
             const id = setInterval(async () => {
                 try {
-                    const netId = await Web3.eth.get.netId();
+                    const netId = await web3.eth.net.getId();
                     callback(null, netId);
                 } catch (error) {
                     callback(error, null);
